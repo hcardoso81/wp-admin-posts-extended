@@ -19,6 +19,8 @@ class AdminFiltersController
         {
             add_action('restrict_manage_posts', [$this, 'renderFilters']);
             add_action('pre_get_posts', [$this, 'applyFilters']);
+            add_action('restrict_manage_posts', [$this, 'renderExportButton']);
+
         }
 
     public function renderFilters(): void
@@ -30,6 +32,17 @@ class AdminFiltersController
         }
 
         require __DIR__ . '/views/tag-filter.php';
+    }
+
+    public function renderExportButton(): void
+    {
+        global $typenow;
+
+        if ($typenow !== 'post') {
+            return;
+        }
+
+        require __DIR__ . '/views/export-button.php';
     }
 
     public function applyFilters(WP_Query $query): void
