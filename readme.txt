@@ -24,3 +24,5 @@ wp-admin-posts-extended/
 │   └── admin.php
 │
 └── wp-admin-posts-extended.php
+
+git archive --format=zip --prefix=wp-admin-posts-extended/ --output=wp-admin-posts-extended.zip HEAD

@@ -8,10 +8,14 @@
  * Version: 0.1.0
  */
 
-
 defined('ABSPATH') || exit;
 
-define('WPM_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('WPM_PLUGIN_VERSION', '1.0.0');
+if (!defined('WPM_PLUGIN_PATH')) {
+    define('WPM_PLUGIN_PATH', plugin_dir_path(__FILE__));
+}
+
+if (!defined('WPM_PLUGIN_VERSION')) {
+    define('WPM_PLUGIN_VERSION', '0.1.0');
+}
 
 require_once WPM_PLUGIN_PATH . 'bootstrap/admin.php';
