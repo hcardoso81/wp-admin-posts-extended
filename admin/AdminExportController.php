@@ -14,6 +14,15 @@ class AdminExportController
 
     public function handleExport(): void
     {
+        
+        if (!is_admin()) {
+            return;
+        }
+
+        if (!isset($_GET['post_type']) || $_GET['post_type'] !== 'post') {
+            return;
+        }
+    
         if (!isset($_GET['export_posts'])) {
             return;
         }

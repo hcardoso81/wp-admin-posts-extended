@@ -2,20 +2,35 @@
 
 namespace WPAdminPostsExtended\Infrastructure\WordPress;
 
-use WP_Query;
 use WPAdminPostsExtended\Domain\PostCriteria;
+use WPAdminPostsExtended\Domain\PostRepositoryInterface;
 
-class WpPostRepository
+class WpPostRepository implements PostRepositoryInterface
 {
     public function findByCriteria(PostCriteria $criteria): array
     {
-        $query = new WP_Query([
+        $args = [
             'post_type'      => 'post',
             'posts_per_page' => -1,
-        ]);
+            'post_status'    => 'any',
+        ];
 
-        (new AdminQueryModifier())->apply($criteria, $query);
+        if ($criteria->search()) {
+            $args['s'] = $criteria->search();
+        }
 
-        return $query->posts;
+        if ($criteria->date()) {
+            $args['m'] = $criteria->date(); // yyyyMM
+        }
+
+        if ($criteria->category()) {
+            $args['cat'] = $criteria->category();
+        }
+
+        if ($criteria->tag()) {
+            $args['tag'] = $criteria->tag(); // slug
+        }
+
+        return get_posts($args);
     }
 }
