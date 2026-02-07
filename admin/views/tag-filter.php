@@ -1,18 +1,25 @@
 <?php
+/**
+ * Tag filter for posts list
+ */
 
-$selected = $_GET['admin_tag'] ?? '';
+$selected = isset($_GET['admin_tag']) ? sanitize_text_field($_GET['admin_tag']) : '';
 
 $tags = get_terms([
-    'taxonomy' => 'post_tag',
+    'taxonomy'   => 'post_tag',
     'hide_empty' => false,
 ]);
 ?>
 
-<select name="admin_tag">
-    <option value="">Todos los tags</option>
-    <?php foreach ($tags as $tag): ?>
-        <option value="<?= esc_attr($tag->slug) ?>" <?= selected($selected, $tag->slug) ?>>
-            <?= esc_html($tag->name) ?>
+<select name="admin_tag" id="filter-by-tag">
+    <option value="">
+        <?php esc_html_e('All tags', 'wp-admin-posts-extended'); ?>
+    </option>
+
+    <?php foreach ($tags as $tag) : ?>
+        <option value="<?php echo esc_attr($tag->slug); ?>"
+            <?php selected($selected, $tag->slug); ?>>
+            <?php echo esc_html($tag->name); ?>
         </option>
     <?php endforeach; ?>
 </select>

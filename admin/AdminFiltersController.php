@@ -2,15 +2,24 @@
 
 namespace WPAdminPostsExtended\Admin;
 
+use WP_Query;
 use WPAdminPostsExtended\Infrastructure\WordPress\Request;
+use WPAdminPostsExtended\Infrastructure\WordPress\AdminQueryModifier;
 
 class AdminFiltersController
 {
-    public function register(): void
+    private AdminQueryModifier $queryModifier;   
+     
+    public function __construct()
     {
-        add_action('restrict_manage_posts', [$this, 'renderFilters']);
-        add_action('pre_get_posts', [$this, 'applyFilters']);
+        $this->queryModifier = new AdminQueryModifier();
     }
+
+    public function register(): void
+        {
+            add_action('restrict_manage_posts', [$this, 'renderFilters']);
+            add_action('pre_get_posts', [$this, 'applyFilters']);
+        }
 
     public function renderFilters(): void
     {
@@ -23,28 +32,17 @@ class AdminFiltersController
         require __DIR__ . '/views/tag-filter.php';
     }
 
-    public function applyFilters($query): void
+    public function applyFilters(WP_Query $query): void
     {
         if (!is_admin() || !$query->is_main_query()) {
             return;
         }
+        
+        if ($query->get('post_type') !== 'post') {
+            return;
+        }
 
         $criteria = Request::postCriteriaFromAdmin();
-
-        if ($criteria->tag()) {
-            $query->set('tag', $criteria->tag());
-        }
-
-        if ($criteria->category()) {
-            $query->set('cat', $criteria->category());
-        }
-
-        if ($criteria->date()) {
-            $query->set('m', $criteria->date());
-        }
-
-        if ($criteria->search()) {
-            $query->set('s', $criteria->search());
-        }
+        $this->queryModifier->apply($criteria, $query);
     }
 }

@@ -8,7 +8,6 @@
  * Version: 0.1.0
  */
 
-namespace WPAdminPostsExtended;
 
 defined('ABSPATH') || exit;
 
