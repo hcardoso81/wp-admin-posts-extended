@@ -12,6 +12,23 @@ class AdminExportController
         add_action('admin_init', [$this, 'handleExport']);
     }
 
+    private function buildFilename(): string
+    {
+        $date = date('Y-m-d');
+
+        $parts = [$date];
+
+        if (!empty($_GET['admin_tag'])) {
+            $tag = sanitize_text_field($_GET['admin_tag']);
+            $tag = str_replace(' ', '-', strtolower($tag));
+            $parts[] = 'tag-' . $tag;
+        }
+
+        $parts[] = 'posts';
+
+        return implode('-', $parts) . '.csv';
+    }
+
     public function handleExport(): void
     {
         
@@ -31,6 +48,10 @@ class AdminExportController
             return;
         }
 
+           while (ob_get_level()) {
+            ob_end_clean();
+        }
+
         $criteria = Request::postCriteriaFromAdmin();
         $posts    = (new WpPostRepository())->findByCriteria($criteria);
 
@@ -41,7 +62,9 @@ class AdminExportController
     private function exportCsv(array $posts): void
     {
         header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=posts-export.csv');
+        header('Content-Disposition: attachment; filename=' . $this->buildFilename());
+
+        echo "\xEF\xBB\xBF"; 
 
         $output = fopen('php://output', 'w');
 
@@ -63,6 +86,7 @@ class AdminExportController
 
         fclose($output);
     }
+
 
     private function terms(int $postId, string $taxonomy): string
     {
