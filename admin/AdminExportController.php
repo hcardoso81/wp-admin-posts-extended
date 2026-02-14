@@ -4,6 +4,9 @@ namespace WPAdminPostsExtended\Admin;
 
 use WPAdminPostsExtended\Infrastructure\WordPress\Request;
 use WPAdminPostsExtended\Infrastructure\WordPress\WpPostRepository;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class AdminExportController
 {
@@ -15,7 +18,6 @@ class AdminExportController
     private function buildFilename(): string
     {
         $date = date('Y-m-d');
-
         $parts = [$date];
 
         if (!empty($_GET['admin_tag'])) {
@@ -26,12 +28,11 @@ class AdminExportController
 
         $parts[] = 'posts';
 
-        return implode('-', $parts) . '.csv';
+        return implode('-', $parts) . '.xlsx';
     }
 
     public function handleExport(): void
     {
-        
         if (!is_admin()) {
             return;
         }
@@ -39,7 +40,7 @@ class AdminExportController
         if (!isset($_GET['post_type']) || $_GET['post_type'] !== 'post') {
             return;
         }
-    
+
         if (!isset($_GET['export_posts'])) {
             return;
         }
@@ -48,45 +49,83 @@ class AdminExportController
             return;
         }
 
-           while (ob_get_level()) {
+        // Limpia cualquier buffer previo
+        while (ob_get_level()) {
             ob_end_clean();
         }
 
         $criteria = Request::postCriteriaFromAdmin();
         $posts    = (new WpPostRepository())->findByCriteria($criteria);
 
-        $this->exportCsv($posts);
+        $this->exportExcel($posts);
         exit;
     }
 
-    private function exportCsv(array $posts): void
+    private function exportExcel(array $posts): void
     {
-        header('Content-Type: text/csv; charset=utf-8');
-        header('Content-Disposition: attachment; filename=' . $this->buildFilename());
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Posts');
 
-        echo "\xEF\xBB\xBF"; 
+        // Encabezados
+        $headers = ['Fecha', 'Título', 'Link', 'Publicado en LinkedIn', 'Fuente', 'Categorías', 'Etiquetas'];
+        $sheet->fromArray([$headers], null, 'A1');
 
-        $output = fopen('php://output', 'w');
+        // Estilo headers
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
 
-        fputcsv($output, [
-            'Fecha',
-            'Título',
-            'Categorías',
-            'Etiquetas',
-        ]);
+        $row = 2;
 
         foreach ($posts as $post) {
-            fputcsv($output, [
-                get_the_date('Y-m-d', $post),
-                $post->post_title,
-                $this->terms($post->ID, 'category'),
-                $this->terms($post->ID, 'post_tag'),
-            ]);
+            $sheet->setCellValue('A' . $row, get_the_date('Y-m-d', $post));
+            $sheet->setCellValue('B' . $row, $post->post_title);
+
+            // Link clickeable
+            $sheet->setCellValue('C' . $row, get_permalink($post));
+            $sheet->getCell('C' . $row)
+                ->getHyperlink()
+                ->setUrl(get_permalink($post));
+
+            $posted = get_post_meta($post->ID, '_linkedin_posted', true);
+            if (!empty($posted)) {
+                $cell = 'D' . $row;
+
+                $sheet->setCellValue($cell, '✔');
+
+                $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($cell)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            }
+
+            $fuenteValue = get_post_meta($post->ID, 'fuente', true);
+
+            if ($fuenteValue === 'comunicado_prensa') {
+                $fuenteLabel = 'Comunicado de prensa';
+            } else {
+                $fuenteLabel = 'Nota original';
+            }
+
+            $sheet->setCellValue('E' . $row, $fuenteLabel);
+
+            $sheet->setCellValue('F' . $row, $this->terms($post->ID, 'category'));
+            $sheet->setCellValue('G' . $row, $this->terms($post->ID, 'post_tag'));
+
+            $row++;
         }
 
-        fclose($output);
-    }
+        // Auto ancho de columnas
+        foreach (range('A', 'G') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
 
+        // Headers HTTP
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $this->buildFilename() . '"');
+        header('Cache-Control: max-age=0');
+        header('Pragma: public');
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+    }
 
     private function terms(int $postId, string $taxonomy): string
     {

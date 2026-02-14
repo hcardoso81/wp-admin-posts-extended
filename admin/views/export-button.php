@@ -9,5 +9,5 @@ if (get_current_screen()->id !== 'edit-post') {
     value="1"
     class="button"
 >
-    Exportar CSV
+    Exportar EXCEL
 </button>
