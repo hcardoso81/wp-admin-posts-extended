@@ -18,4 +18,5 @@ if (!defined('WPM_PLUGIN_VERSION')) {
     define('WPM_PLUGIN_VERSION', '0.1.0');
 }
 
+require_once __DIR__ . '/vendor/autoload.php';
 require_once WPM_PLUGIN_PATH . 'bootstrap/admin.php';
