@@ -46,7 +46,7 @@ add_action('acf/init', function () {
                     'nota_original' => 'Nota original',
                     'comunicado_prensa' => 'Comunicado de prensa',
                 ],
-                'default_value' => 'nota_original',
+                'default_value' => 'comunicado_prensa',
                 'layout' => 'vertical',
                 'return_format' => 'value',
             ],

@@ -98,7 +98,8 @@ class AdminExportController
 
             $fuenteValue = get_post_meta($post->ID, 'fuente', true);
 
-            if ($fuenteValue === 'comunicado_prensa') {
+            // Default si no existe ACF o viene vacío
+            if (empty($fuenteValue) || $fuenteValue === 'comunicado_prensa') {
                 $fuenteLabel = 'Comunicado de prensa';
             } else {
                 $fuenteLabel = 'Nota original';
