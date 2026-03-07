@@ -3,7 +3,7 @@ wp-admin-posts-extended/
 ├── admin/
 │   ├── AdminFiltersController.php
 │   ├── AdminExportController.php
-│   ├── AdminAssets.php (opcional)
+│   ├── AdminAssets.php
 │   │
 │   └── views/
 │       ├── tag-filter.php

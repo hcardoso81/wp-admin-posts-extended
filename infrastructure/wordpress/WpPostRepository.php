@@ -27,8 +27,15 @@ class WpPostRepository implements PostRepositoryInterface
             $args['cat'] = $criteria->category();
         }
 
-        if ($criteria->tag()) {
-            $args['tag'] = $criteria->tag(); // slug
+        if ($criteria->tags()) {
+            $args['tax_query'] = [
+                [
+                    'taxonomy' => 'post_tag',
+                    'field'    => 'slug',
+                    'terms'    => $criteria->tags(),
+                    'operator' => 'IN'
+                ]
+            ];
         }
 
         return get_posts($args);

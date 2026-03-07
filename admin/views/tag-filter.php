@@ -3,7 +3,7 @@
  * Tag filter for posts list
  */
 
-$selected = isset($_GET['admin_tag']) ? sanitize_text_field($_GET['admin_tag']) : '';
+$selected = isset($_GET['admin_tag']) ? (array) $_GET['admin_tag'] : [];
 
 $tags = get_terms([
     'taxonomy'   => 'post_tag',
@@ -11,14 +11,10 @@ $tags = get_terms([
 ]);
 ?>
 
-<select name="admin_tag" id="filter-by-tag">
-    <option value="">
-        <?php esc_html_e('All tags', 'wp-admin-posts-extended'); ?>
-    </option>
-
+<select name="admin_tag[]" id="filter-by-tag" multiple style="min-width:250px;">
     <?php foreach ($tags as $tag) : ?>
         <option value="<?php echo esc_attr($tag->slug); ?>"
-            <?php selected($selected, $tag->slug); ?>>
+            <?php echo in_array($tag->slug, $selected) ? 'selected' : ''; ?>>
             <?php echo esc_html($tag->name); ?>
         </option>
     <?php endforeach; ?>

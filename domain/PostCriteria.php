@@ -4,26 +4,26 @@ namespace WPAdminPostsExtended\Domain;
 
 class PostCriteria
 {
-    private ?string $tag;
+    private ?array $tags;
     private ?string $category;
     private ?string $date;
     private ?string $search;
 
     public function __construct(
-        ?string $tag = null,
+        ?array $tags = null,
         ?string $category = null,
         ?string $date = null,
         ?string $search = null
     ) {
-        $this->tag = $tag;
+        $this->tags = $tags;
         $this->category = $category;
         $this->date = $date;
         $this->search = $search;
     }
 
-    public function tag(): ?string
+    public function tags(): ?array
     {
-        return $this->tag;
+        return $this->tags;
     }
 
     public function category(): ?string

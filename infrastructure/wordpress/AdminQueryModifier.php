@@ -2,15 +2,22 @@
 
 namespace WPAdminPostsExtended\Infrastructure\WordPress;
 
-use WPAdminPostsExtended\Domain\PostCriteria;
 use WP_Query;
+use WPAdminPostsExtended\Domain\PostCriteria;
 
 class AdminQueryModifier
 {
     public function apply(PostCriteria $criteria, WP_Query $query): void
     {
-        if ($criteria->tag()) {
-            $query->set('tag', $criteria->tag());
+        if ($criteria->tags()) {
+            $query->set('tax_query', [
+                [
+                    'taxonomy' => 'post_tag',
+                    'field'    => 'slug',
+                    'terms'    => $criteria->tags(),
+                    'operator' => 'IN'
+                ]
+            ]);
         }
 
         if ($criteria->category()) {

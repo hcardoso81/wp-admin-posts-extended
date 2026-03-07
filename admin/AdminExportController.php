@@ -21,9 +21,8 @@ class AdminExportController
         $parts = [$date];
 
         if (!empty($_GET['admin_tag'])) {
-            $tag = sanitize_text_field($_GET['admin_tag']);
-            $tag = str_replace(' ', '-', strtolower($tag));
-            $parts[] = 'tag-' . $tag;
+            $tags = array_map('sanitize_text_field', (array) $_GET['admin_tag']);
+            $parts[] = 'tags-' . implode('-', $tags);
         }
 
         $parts[] = 'posts';

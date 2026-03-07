@@ -2,6 +2,8 @@
 
 use WPAdminPostsExtended\Admin\AdminFiltersController;
 use WPAdminPostsExtended\Admin\AdminExportController;
+use WPAdminPostsExtended\Admin\AdminAssets;
+
 
 // Domain
 require_once __DIR__ . '/../domain/PostCriteria.php';
@@ -13,13 +15,16 @@ require_once __DIR__ . '/../infrastructure/wordpress/Request.php';
 require_once __DIR__ . '/../infrastructure/wordpress/WpPostRepository.php';
 
 // Admin
+require_once __DIR__ . '/../admin/AdminAssets.php';
 require_once __DIR__ . '/../admin/AdminFiltersController.php';
 require_once __DIR__ . '/../admin/AdminExportController.php';
+
 
 /**
  * Registro de controladores admin
  */
 add_action('plugins_loaded', function () {
+    (new AdminAssets())->register();
     (new AdminFiltersController())->register();
     (new AdminExportController())->register();
 });

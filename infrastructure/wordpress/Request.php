@@ -8,9 +8,14 @@ class Request
 {
     public static function postCriteriaFromAdmin(): PostCriteria
     {
-        $tag = isset($_GET['admin_tag']) && $_GET['admin_tag'] !== ''
-            ? sanitize_text_field($_GET['admin_tag'])
-            : null;
+        $tags = null;
+
+        if (!empty($_GET['admin_tag'])) {
+            $tags = array_map(
+                'sanitize_text_field',
+                (array) $_GET['admin_tag']
+            );
+        }
 
         $category = isset($_GET['cat']) && $_GET['cat'] !== ''
             ? (string) $_GET['cat']
@@ -24,6 +29,6 @@ class Request
             ? sanitize_text_field($_GET['s'])
             : null;
 
-        return new PostCriteria($tag, $category, $date, $search);
+        return new PostCriteria($tags, $category, $date, $search);
     }
 }
