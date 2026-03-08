@@ -5,7 +5,7 @@
  * Plugin URI: https://github.com/hcardoso81/wp-admin-posts-extended
  * Author: Hernan Cardoso
  * Author URI: https://www.linkedin.com/in/cardosohernan/
- * Version: 0.1.0
+ * Version: 1.1.0
  */
 
 defined('ABSPATH') || exit;
