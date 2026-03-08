@@ -9,30 +9,109 @@ class AdminAssets
         add_action('admin_enqueue_scripts', [$this, 'enqueue']);
     }
 
-    public function enqueue(): void
+    public function enqueue($hook): void
     {
-        wp_enqueue_style(
-            'select2',
-            'https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css'
+        if ($hook !== 'edit.php') {
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Styles
+        |--------------------------------------------------------------------------
+        */
+
+        // Select2 CSS
+        wp_register_style(
+            'wpape-select2',
+            'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css',
+            [],
+            '4.0.13'
         );
 
-        wp_enqueue_script(
-            'select2',
-            'https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js',
+        // Admin custom CSS
+        wp_register_style(
+            'wpape-admin',
+            plugin_dir_url(__FILE__) . 'assets/css/admin.css',
+            ['wpape-select2'],
+            '1.0'
+        );
+
+        wp_enqueue_style('wpape-select2');
+        wp_enqueue_style('wpape-admin');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Scripts
+        |--------------------------------------------------------------------------
+        */
+
+        wp_register_script(
+            'wpape-select2',
+            'https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js',
             ['jquery'],
-            null,
+            '4.0.13',
             true
         );
 
+        wp_enqueue_script('wpape-select2');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Select2 Init
+        |--------------------------------------------------------------------------
+        */
+
         wp_add_inline_script(
-            'select2',
-            "jQuery(function($){
-                $('#filter-by-tag').select2({
-                    placeholder: 'Select tags',
+            'wpape-select2',
+            "
+            jQuery(document).ready(function($){
+
+                if (typeof $.fn.select2 === 'undefined') {
+                    console.error('Select2 not loaded');
+                    return;
+                }
+
+                const el = $('#filter-by-tag');
+
+                if (!el.length) {
+                    return;
+                }
+
+                function formatTag(option){
+
+                    if (!option.id){
+                        return option.text;
+                    }
+
+                    const state = $(
+                        '<span style=\"display:flex;align-items:center;gap:6px;\">' +
+                        '<input type=\"checkbox\" ' +
+                        (option.selected ? 'checked' : '') +
+                        ' /> ' +
+                        option.text +
+                        '</span>'
+                    );
+
+                    return state;
+                }
+
+                el.select2({
+                    placeholder: 'Filtrar por etiquetas',
                     allowClear: true,
-                    width: '250px'
+                    closeOnSelect: false,
+                    width: '260px',
+                    templateResult: formatTag,
+                    templateSelection: function(option){
+                        return option.text;
+                    }
                 });
-            });"
+
+            });
+            ",
+            'after'
         );
     }
 }

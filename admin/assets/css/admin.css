@@ -1,0 +1,49 @@
+/* ===== Tag filter select2 integrado al estilo WordPress ===== */
+
+#filter-by-tag + .select2-container {
+    margin-right: 10px;
+    min-width: 260px;
+}
+
+/* contenedor principal */
+.select2-container--default .select2-selection--multiple {
+    min-height: 32px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    padding: 2px 4px;
+    background: #fff;
+}
+
+/* focus como wordpress */
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* items seleccionados */
+.select2-container--default .select2-selection__choice {
+    background: #f0f0f1;
+    border: 1px solid #dcdcde;
+    border-radius: 3px;
+    padding: 2px 6px;
+}
+
+/* campo de búsqueda */
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-top: 2px;
+}
+
+/* dropdown */
+.select2-dropdown {
+    border-color: #8c8f94;
+}
+
+/* separación botón exportar */
+button[name="export_posts"] {
+    margin-left: 8px;
+}
+
+/* alineación en tablenav */
+.tablenav .actions .select2-container {
+    vertical-align: middle;
+}
