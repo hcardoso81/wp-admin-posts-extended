@@ -25,6 +25,15 @@ class AdminExportController
             $parts[] = 'tags-' . implode('-', $tags);
         }
 
+        if (!empty($_GET['admin_author'])) {
+            $authorId = absint($_GET['admin_author']);
+            $author = $authorId ? get_userdata($authorId) : false;
+
+            if ($author) {
+                $parts[] = 'autor-' . sanitize_title($author->display_name);
+            }
+        }
+
         $parts[] = 'posts';
 
         return implode('-', $parts) . '.xlsx';
@@ -48,13 +57,12 @@ class AdminExportController
             return;
         }
 
-        // Limpia cualquier buffer previo
         while (ob_get_level()) {
             ob_end_clean();
         }
 
         $criteria = Request::postCriteriaFromAdmin();
-        $posts    = (new WpPostRepository())->findByCriteria($criteria);
+        $posts = (new WpPostRepository())->findByCriteria($criteria);
 
         $this->exportExcel($posts);
         exit;
@@ -66,11 +74,8 @@ class AdminExportController
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Posts');
 
-        // Encabezados
-        $headers = ['Fecha', 'Título', 'Link', 'Publicado en LinkedIn', 'Fuente', 'Categorías', 'Etiquetas'];
+        $headers = ['Fecha', 'Titulo', 'Link', 'Estado LinkedIn', 'Fuente', 'Categorias', 'Etiquetas'];
         $sheet->fromArray([$headers], null, 'A1');
-
-        // Estilo headers
         $sheet->getStyle('A1:G1')->getFont()->setBold(true);
 
         $row = 2;
@@ -79,25 +84,18 @@ class AdminExportController
             $sheet->setCellValue('A' . $row, get_the_date('Y-m-d', $post));
             $sheet->setCellValue('B' . $row, $post->post_title);
 
-            // Link clickeable
             $sheet->setCellValue('C' . $row, get_permalink($post));
             $sheet->getCell('C' . $row)
                 ->getHyperlink()
                 ->setUrl(get_permalink($post));
 
-            $posted = get_post_meta($post->ID, '_linkedin_posted', true);
-            if (!empty($posted)) {
-                $cell = 'D' . $row;
-
-                $sheet->setCellValue($cell, '✔');
-
-                $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle($cell)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-            }
+            $cell = 'D' . $row;
+            $sheet->setCellValue($cell, $this->linkedinStatusLabel($post->ID));
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle($cell)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
             $fuenteValue = get_post_meta($post->ID, 'fuente', true);
 
-            // Default si no existe ACF o viene vacío
             if (empty($fuenteValue) || $fuenteValue === 'comunicado_prensa') {
                 $fuenteLabel = 'Comunicado de prensa';
             } else {
@@ -105,19 +103,16 @@ class AdminExportController
             }
 
             $sheet->setCellValue('E' . $row, $fuenteLabel);
-
             $sheet->setCellValue('F' . $row, $this->terms($post->ID, 'category'));
             $sheet->setCellValue('G' . $row, $this->terms($post->ID, 'post_tag'));
 
             $row++;
         }
 
-        // Auto ancho de columnas
         foreach (range('A', 'G') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
-        // Headers HTTP
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $this->buildFilename() . '"');
         header('Cache-Control: max-age=0');
@@ -136,5 +131,25 @@ class AdminExportController
         }
 
         return implode(', ', wp_list_pluck($terms, 'name'));
+    }
+
+    private function linkedinStatusLabel(int $postId): string
+    {
+        $status = get_post_meta($postId, '_linkedin_status', true);
+
+        $labels = [
+            'pending' => 'Pendiente',
+            'published' => 'Publicado',
+            'manual_published' => 'Publicado manualmente',
+            'scheduled' => 'Programado para publicar',
+        ];
+
+        if (is_string($status) && isset($labels[$status])) {
+            return $labels[$status];
+        }
+
+        $posted = get_post_meta($postId, '_linkedin_posted', true);
+
+        return !empty($posted) ? $labels['published'] : $labels['pending'];
     }
 }

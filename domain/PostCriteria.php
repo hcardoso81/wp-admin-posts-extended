@@ -8,17 +8,20 @@ class PostCriteria
     private ?string $category;
     private ?string $date;
     private ?string $search;
+    private ?int $author;
 
     public function __construct(
         ?array $tags = null,
         ?string $category = null,
         ?string $date = null,
-        ?string $search = null
+        ?string $search = null,
+        ?int $author = null
     ) {
         $this->tags = $tags;
         $this->category = $category;
         $this->date = $date;
         $this->search = $search;
+        $this->author = $author;
     }
 
     public function tags(): ?array
@@ -39,5 +42,10 @@ class PostCriteria
     public function search(): ?string
     {
         return $this->search;
+    }
+
+    public function author(): ?int
+    {
+        return $this->author;
     }
 }

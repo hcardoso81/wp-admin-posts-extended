@@ -29,6 +29,13 @@ class Request
             ? sanitize_text_field($_GET['s'])
             : null;
 
-        return new PostCriteria($tags, $category, $date, $search);
+        $author = null;
+
+        if (isset($_GET['admin_author']) && $_GET['admin_author'] !== '') {
+            $author = absint($_GET['admin_author']);
+            $author = $author > 0 ? $author : null;
+        }
+
+        return new PostCriteria($tags, $category, $date, $search, $author);
     }
 }

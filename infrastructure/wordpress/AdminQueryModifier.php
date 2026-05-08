@@ -31,5 +31,9 @@ class AdminQueryModifier
         if ($criteria->search()) {
             $query->set('s', $criteria->search());
         }
+
+        if ($criteria->author()) {
+            $query->set('author', $criteria->author());
+        }
     }
 }

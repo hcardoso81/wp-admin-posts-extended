@@ -16,12 +16,11 @@ class AdminFiltersController
     }
 
     public function register(): void
-        {
-            add_action('restrict_manage_posts', [$this, 'renderFilters']);
-            add_action('pre_get_posts', [$this, 'applyFilters']);
-            add_action('restrict_manage_posts', [$this, 'renderExportButton']);
-
-        }
+    {
+        add_action('restrict_manage_posts', [$this, 'renderFilters']);
+        add_action('pre_get_posts', [$this, 'applyFilters']);
+        add_action('restrict_manage_posts', [$this, 'renderExportButton']);
+    }
 
     public function renderFilters(): void
     {
@@ -32,6 +31,7 @@ class AdminFiltersController
         }
 
         require __DIR__ . '/views/tag-filter.php';
+        require __DIR__ . '/views/author-filter.php';
     }
 
     public function renderExportButton(): void

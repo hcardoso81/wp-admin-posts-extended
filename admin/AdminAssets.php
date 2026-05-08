@@ -74,11 +74,14 @@ class AdminAssets
                     return;
                 }
 
-                const el = $('#filter-by-tag');
+                const exportButton = $('#wpape-export-posts');
+                const filterButton = $('#post-query-submit');
 
-                if (!el.length) {
-                    return;
+                if (exportButton.length && filterButton.length) {
+                    exportButton.insertAfter(filterButton);
                 }
+
+                const el = $('#filter-by-tag');
 
                 function formatTag(option){
 
@@ -98,16 +101,18 @@ class AdminAssets
                     return state;
                 }
 
-                el.select2({
-                    placeholder: 'Filtrar por etiquetas',
-                    allowClear: true,
-                    closeOnSelect: false,
-                    width: '260px',
-                    templateResult: formatTag,
-                    templateSelection: function(option){
-                        return option.text;
-                    }
-                });
+                if (el.length) {
+                    el.select2({
+                        placeholder: 'Filtrar por etiquetas',
+                        allowClear: true,
+                        closeOnSelect: false,
+                        width: '260px',
+                        templateResult: formatTag,
+                        templateSelection: function(option){
+                            return option.text;
+                        }
+                    });
+                }
 
             });
             ",

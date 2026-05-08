@@ -27,6 +27,10 @@ class WpPostRepository implements PostRepositoryInterface
             $args['cat'] = $criteria->category();
         }
 
+        if ($criteria->author()) {
+            $args['author'] = $criteria->author();
+        }
+
         if ($criteria->tags()) {
             $args['tax_query'] = [
                 [

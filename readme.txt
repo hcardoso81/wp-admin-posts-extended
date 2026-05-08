@@ -1,28 +1,38 @@
 wp-admin-posts-extended/
-│
-├── admin/
-│   ├── AdminFiltersController.php
-│   ├── AdminExportController.php
-│   ├── AdminAssets.php
-│   │
-│   └── views/
-│       ├── tag-filter.php
-│       └── export-button.php
-│
-├── domain/
-│   ├── PostFilter.php
-│   ├── PostCriteria.php
-│   └── PostRepositoryInterface.php
-│
-├── infrastructure/
-│   └── wordpress/
-│       ├── WpPostRepository.php
-│       ├── AdminQueryModifier.php
-│       └── Request.php
-│
-├── bootstrap/
-│   └── admin.php
-│
-└── wp-admin-posts-extended.php
+|
+|-- admin/
+|   |-- AdminFiltersController.php
+|   |-- AdminExportController.php
+|   |-- AdminAssets.php
+|   |
+|   |-- views/
+|       |-- tag-filter.php
+|       |-- author-filter.php
+|       |-- export-button.php
+|
+|-- domain/
+|   |-- PostCriteria.php
+|   |-- PostRepositoryInterface.php
+|
+|-- infrastructure/
+|   |-- wordpress/
+|       |-- WpPostRepository.php
+|       |-- AdminQueryModifier.php
+|       |-- Request.php
+|
+|-- bootstrap/
+|   |-- admin.php
+|
+|-- wp-admin-posts-extended.php
+
+Funcionalidades:
+- Filtro multiple por etiquetas mediante Select2.
+- Filtro por autor mediante dropdown de usuarios con capacidad edit_posts.
+- Compatibilidad con filtros nativos de categoria, fecha y busqueda.
+- Exportacion Excel de los posts filtrados.
+- Exportacion del estado de LinkedIn como texto: Pendiente, Publicado, Publicado manualmente o Programado para publicar.
+- Campo editorial Fuente mediante ACF.
+
+Comando para generar zip desde Git:
 
 git archive --format=zip --prefix=wp-admin-posts-extended/ --output=wp-admin-posts-extended.zip HEAD
