@@ -20,6 +20,13 @@ Plugin personalizado para WordPress que mejora la gestion editorial del listado 
 - Campo editorial `hasVideo` mediante ACF para marcar posts que contienen videos de YouTube embebidos.
 - Columna `Contiene Videos` al final del listado administrativo de posts.
 - Columna `Contiene Videos` en la exportacion Excel.
+- Herramienta temporal de backfill para completar `hasVideo` en posts historicos publicados hasta el 1 de enero de 2025.
+
+## Herramienta temporal
+
+`tools/backfill-has-video.php` permite ejecutar una rutina manual y segura para marcar `hasVideo` en posts historicos que contienen links o embeds de YouTube.
+
+Antes de subirla a produccion, configurar el allowlist de IP dentro del archivo. Ejecutarla desde el navegador con un usuario administrador, correr primero en modo simulacion y luego sin simulacion. Al finalizar, borrar el archivo del servidor.
 
 ## Arquitectura
 
@@ -43,4 +50,5 @@ php -l admin/AdminAssets.php
 php -l admin/AdminFiltersController.php
 php -l admin/AdminExportController.php
 php -l admin/AdminPostColumnsController.php
+php -l tools/backfill-has-video.php
 ```

@@ -16,6 +16,7 @@ El plugin extiende la pantalla nativa de listado de posts (`edit.php?post_type=p
 - Campo editorial "Fuente" mediante ACF, con opciones para clasificar el contenido como "Nota original" o "Comunicado de prensa".
 - Campo editorial "hasVideo" mediante ACF, con checkbox para marcar posts que contienen videos de YouTube embebidos.
 - Columna "Contiene Videos" al final del listado administrativo de posts y en la exportacion Excel.
+- Herramienta temporal `tools/backfill-has-video.php` para completar `hasVideo` en posts historicos publicados hasta el 1 de enero de 2025.
 
 El objetivo principal del proyecto es mantener la logica desacoplada del archivo principal del plugin y organizada por responsabilidades.
 
@@ -128,6 +129,16 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 - Ajustes visuales para integrar Select2, selector de autor y botones al estilo de WordPress Admin.
 - Mantiene espaciado y wrapping de la barra superior de filtros para evitar controles pegados o superpuestos.
 
+`tools/backfill-has-video.php`
+
+- Herramienta temporal de ejecucion manual para actualizar posts historicos.
+- Busca posts publicados hasta el 1 de enero de 2025 inclusive.
+- Analiza `post_content` para detectar URLs o embeds de YouTube.
+- Marca el ACF `hasVideo` con `['1']` cuando encuentra contenido de YouTube.
+- Requiere usuario logueado con `manage_options`, nonce y allowlist de IP configurado.
+- Guarda la opcion `wpape_has_video_backfill_completed` para evitar ejecuciones repetidas.
+- Debe borrarse del servidor despues de ejecutarse correctamente.
+
 ## Flujo Funcional
 
 1. WordPress carga el plugin desde `wp-admin-posts-extended.php`.
@@ -183,6 +194,20 @@ La exportacion lee este meta con `get_post_meta($post->ID, 'hasVideo', true)` y 
 - "Si" cuando el checkbox esta marcado.
 - "No" cuando esta vacio o sin marcar.
 
+## Backfill historico hasVideo
+
+La herramienta temporal `tools/backfill-has-video.php` sirve para completar `hasVideo` en posts publicados hasta el 1 de enero de 2025 inclusive.
+
+Uso recomendado:
+
+1. Configurar el allowlist de IP dentro del archivo antes de subirlo.
+2. Abrir el archivo desde el navegador con un usuario administrador logueado.
+3. Ejecutar primero en modo simulacion.
+4. Ejecutar sin simulacion solo si el conteo es correcto.
+5. Borrar el archivo del servidor al finalizar.
+
+La deteccion contempla URLs y embeds de `youtube.com`, `youtu.be` y `youtube-nocookie.com`.
+
 ## Convenciones del Proyecto
 
 - Mantener el archivo principal del plugin liviano.
@@ -227,6 +252,7 @@ php -l admin/AdminAssets.php
 php -l admin/AdminFiltersController.php
 php -l admin/AdminExportController.php
 php -l admin/AdminPostColumnsController.php
+php -l tools/backfill-has-video.php
 php -l admin/views/author-filter.php
 ```
 
