@@ -14,8 +14,8 @@ El plugin extiende la pantalla nativa de listado de posts (`edit.php?post_type=p
 - Exportacion de los resultados filtrados a un archivo Excel `.xlsx`.
 - Exportacion del estado de publicacion en LinkedIn como texto, incluyendo pendiente, publicado, publicado manualmente y programado para publicar.
 - Campo editorial "Fuente" mediante ACF, con opciones para clasificar el contenido como "Nota original" o "Comunicado de prensa".
-- Campo editorial "hasVideo" mediante ACF, con checkbox para marcar posts que contienen videos.
-- Columna "Contiene Videos" en el listado administrativo de posts y en la exportacion Excel.
+- Campo editorial "hasVideo" mediante ACF, con checkbox para marcar posts que contienen videos de YouTube embebidos.
+- Columna "Contiene Videos" al final del listado administrativo de posts y en la exportacion Excel.
 
 El objetivo principal del proyecto es mantener la logica desacoplada del archivo principal del plugin y organizada por responsabilidades.
 
@@ -97,7 +97,7 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 `admin/AdminPostColumnsController.php`
 
 - Registra columnas personalizadas en el listado administrativo de posts.
-- Agrega la columna `Contiene Videos`.
+- Agrega la columna `Contiene Videos` al final del listado.
 - Lee el meta `hasVideo` y muestra `Si` o `No`.
 
 `admin/AdminAssets.php`
@@ -170,13 +170,13 @@ Campo:
 
 - Nombre: `hasVideo`.
 - Tipo: checkbox.
-- Label: `Contiene Videos`.
+- Label: `Contiene videos de YouTube embebidos`.
 - Opcion:
-  - `1`: Contiene videos.
+  - `1`: Si.
 - Valor por defecto: vacio, interpretado como false.
 - Ubicacion: posts (`post_type == post`).
 
-El listado administrativo muestra este valor en la columna `Contiene Videos`.
+El listado administrativo muestra este valor en la columna `Contiene Videos`, ubicada al final de la tabla.
 
 La exportacion lee este meta con `get_post_meta($post->ID, 'hasVideo', true)` y muestra:
 

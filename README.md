@@ -7,7 +7,7 @@
 ![ACF](https://img.shields.io/badge/ACF-00A651?style=for-the-badge&logo=wordpress&logoColor=white)
 ![Select2](https://img.shields.io/badge/Select2-1F6FEB?style=for-the-badge&logo=jquery&logoColor=white)
 
-Plugin personalizado para WordPress que mejora la gestion editorial del listado administrativo de posts con filtros avanzados, campos ACF, columnas personalizadas y exportacion a Excel.
+Plugin personalizado para WordPress que mejora la gestion editorial del listado administrativo de posts con filtros avanzados, campos ACF, indicador de videos embebidos y exportacion a Excel.
 
 ## Funcionalidades
 
@@ -17,8 +17,8 @@ Plugin personalizado para WordPress que mejora la gestion editorial del listado 
 - Exportacion de los resultados filtrados a `.xlsx`.
 - Columna de estado de LinkedIn en el Excel con soporte para `Pendiente`, `Publicado`, `Publicado manualmente` y `Programado para publicar`.
 - Campo editorial `Fuente` mediante ACF para clasificar posts como `Nota original` o `Comunicado de prensa`.
-- Campo editorial `hasVideo` mediante ACF para marcar posts que contienen videos.
-- Columna `Contiene Videos` en el listado administrativo de posts.
+- Campo editorial `hasVideo` mediante ACF para marcar posts que contienen videos de YouTube embebidos.
+- Columna `Contiene Videos` al final del listado administrativo de posts.
 - Columna `Contiene Videos` en la exportacion Excel.
 
 ## Arquitectura

@@ -81,11 +81,11 @@ add_action('acf/init', function () {
         'fields' => [
             [
                 'key' => 'field_wpape_has_video',
-                'label' => 'Contiene Videos',
+                'label' => 'Contiene videos de YouTube embebidos',
                 'name' => 'hasVideo',
                 'type' => 'checkbox',
                 'choices' => [
-                    '1' => 'Contiene videos',
+                    '1' => 'Si',
                 ],
                 'default_value' => [],
                 'layout' => 'vertical',

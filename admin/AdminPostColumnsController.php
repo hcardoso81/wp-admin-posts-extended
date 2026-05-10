@@ -12,21 +12,11 @@ class AdminPostColumnsController
 
     public function addColumns(array $columns): array
     {
-        $updatedColumns = [];
+        unset($columns['has_video']);
 
-        foreach ($columns as $key => $label) {
-            $updatedColumns[$key] = $label;
+        $columns['has_video'] = 'Contiene Videos';
 
-            if ($key === 'title') {
-                $updatedColumns['has_video'] = 'Contiene Videos';
-            }
-        }
-
-        if (!isset($updatedColumns['has_video'])) {
-            $updatedColumns['has_video'] = 'Contiene Videos';
-        }
-
-        return $updatedColumns;
+        return $columns;
     }
 
     public function renderColumn(string $column, int $postId): void
