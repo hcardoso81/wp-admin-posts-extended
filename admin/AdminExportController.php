@@ -74,9 +74,9 @@ class AdminExportController
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Posts');
 
-        $headers = ['Fecha', 'Titulo', 'Link', 'Estado LinkedIn', 'Fuente', 'Categorias', 'Etiquetas'];
+        $headers = ['Fecha', 'Titulo', 'Link', 'Estado LinkedIn', 'Fuente', 'Contiene Videos', 'Categorias', 'Etiquetas'];
         $sheet->fromArray([$headers], null, 'A1');
-        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
 
         $row = 2;
 
@@ -103,13 +103,14 @@ class AdminExportController
             }
 
             $sheet->setCellValue('E' . $row, $fuenteLabel);
-            $sheet->setCellValue('F' . $row, $this->terms($post->ID, 'category'));
-            $sheet->setCellValue('G' . $row, $this->terms($post->ID, 'post_tag'));
+            $sheet->setCellValue('F' . $row, $this->hasVideoLabel($post->ID));
+            $sheet->setCellValue('G' . $row, $this->terms($post->ID, 'category'));
+            $sheet->setCellValue('H' . $row, $this->terms($post->ID, 'post_tag'));
 
             $row++;
         }
 
-        foreach (range('A', 'G') as $column) {
+        foreach (range('A', 'H') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
@@ -151,5 +152,16 @@ class AdminExportController
         $posted = get_post_meta($postId, '_linkedin_posted', true);
 
         return !empty($posted) ? $labels['published'] : $labels['pending'];
+    }
+
+    private function hasVideoLabel(int $postId): string
+    {
+        $value = get_post_meta($postId, 'hasVideo', true);
+
+        if (is_array($value)) {
+            return in_array('1', $value, true) || in_array(1, $value, true) ? 'Si' : 'No';
+        }
+
+        return $value === '1' || $value === 1 || $value === true ? 'Si' : 'No';
     }
 }

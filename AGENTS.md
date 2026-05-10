@@ -14,6 +14,8 @@ El plugin extiende la pantalla nativa de listado de posts (`edit.php?post_type=p
 - Exportacion de los resultados filtrados a un archivo Excel `.xlsx`.
 - Exportacion del estado de publicacion en LinkedIn como texto, incluyendo pendiente, publicado, publicado manualmente y programado para publicar.
 - Campo editorial "Fuente" mediante ACF, con opciones para clasificar el contenido como "Nota original" o "Comunicado de prensa".
+- Campo editorial "hasVideo" mediante ACF, con checkbox para marcar posts que contienen videos.
+- Columna "Contiene Videos" en el listado administrativo de posts y en la exportacion Excel.
 
 El objetivo principal del proyecto es mantener la logica desacoplada del archivo principal del plugin y organizada por responsabilidades.
 
@@ -89,8 +91,14 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 - Verifica contexto admin, `post_type=post`, accion `export_posts` y permisos `edit_posts`.
 - Obtiene posts filtrados usando `WpPostRepository`.
 - Genera el `.xlsx` con PhpSpreadsheet.
-- Columnas actuales: Fecha, Titulo, Link, Estado LinkedIn, Fuente, Categorias, Etiquetas.
+- Columnas actuales: Fecha, Titulo, Link, Estado LinkedIn, Fuente, Contiene Videos, Categorias, Etiquetas.
 - La columna Estado LinkedIn lee `_linkedin_status` y mantiene compatibilidad con `_linkedin_posted`.
+
+`admin/AdminPostColumnsController.php`
+
+- Registra columnas personalizadas en el listado administrativo de posts.
+- Agrega la columna `Contiene Videos`.
+- Lee el meta `hasVideo` y muestra `Si` o `No`.
 
 `admin/AdminAssets.php`
 
@@ -154,6 +162,27 @@ La exportacion lee este meta con `get_post_meta($post->ID, 'fuente', true)` y mu
 - "Comunicado de prensa" si el valor esta vacio o es `comunicado_prensa`.
 - "Nota original" para cualquier otro valor esperado actualmente.
 
+## Campo ACF hasVideo
+
+El field group local se registra en `bootstrap/admin.php` durante `acf/init`.
+
+Campo:
+
+- Nombre: `hasVideo`.
+- Tipo: checkbox.
+- Label: `Contiene Videos`.
+- Opcion:
+  - `1`: Contiene videos.
+- Valor por defecto: vacio, interpretado como false.
+- Ubicacion: posts (`post_type == post`).
+
+El listado administrativo muestra este valor en la columna `Contiene Videos`.
+
+La exportacion lee este meta con `get_post_meta($post->ID, 'hasVideo', true)` y muestra:
+
+- "Si" cuando el checkbox esta marcado.
+- "No" cuando esta vacio o sin marcar.
+
 ## Convenciones del Proyecto
 
 - Mantener el archivo principal del plugin liviano.
@@ -165,6 +194,9 @@ La exportacion lee este meta con `get_post_meta($post->ID, 'fuente', true)` y mu
 - Sanitizar todo input que venga del request.
 - Escapar output en vistas con funciones de WordPress como `esc_attr()` y `esc_html()`.
 - Evitar mezclar generacion de Excel con renderizado de UI.
+- Cuando una tarea agregue o cambie funcionalidad del plugin, actualizar tambien `AGENTS.md`, `README.md`, `readme.txt`, la descripcion del encabezado del plugin y la constante/version del plugin en `wp-admin-posts-extended.php`.
+- Incrementar la version del plugin en cada cambio funcional, usando versionado semantico segun el alcance del cambio.
+- Mantener el README de GitHub profesional y actualizado, incluyendo chips/badges de tecnologias cuando se modifique el stack o se agregue una tecnologia visible.
 - Al cerrar cambios de codigo, sugerir un mensaje de commit en formato Conventional Commits.
 
 ## Dependencias
@@ -194,6 +226,7 @@ php -l infrastructure/wordpress/WpPostRepository.php
 php -l admin/AdminAssets.php
 php -l admin/AdminFiltersController.php
 php -l admin/AdminExportController.php
+php -l admin/AdminPostColumnsController.php
 php -l admin/views/author-filter.php
 ```
 
@@ -204,7 +237,7 @@ Para cambios funcionales, validar manualmente en WordPress Admin:
 - El filtro por autor aparece, no genera warnings de WordPress y mantiene seleccion.
 - Los filtros nativos de categoria, fecha y busqueda siguen funcionando.
 - La exportacion respeta los filtros aplicados.
-- El Excel abre correctamente y contiene fecha, titulo, link, estado de LinkedIn textual, fuente, categorias y etiquetas.
+- El Excel abre correctamente y contiene fecha, titulo, link, estado de LinkedIn textual, fuente, contiene videos, categorias y etiquetas.
 
 ## Notas Para Futuras Extensiones
 
@@ -219,4 +252,4 @@ Desarrolle un plugin personalizado para WordPress que extiende el panel administ
 
 ## Version Corta
 
-Plugin WordPress personalizado para mejorar la gestion editorial del backend, agregando filtros avanzados por etiquetas y autor, integracion con filtros nativos y exportacion de posts filtrados a Excel con estado de LinkedIn. Desarrollado en PHP con WordPress Plugin API, Composer, PhpSpreadsheet, ACF y Select2, bajo una arquitectura modular por capas.
+Plugin WordPress personalizado para mejorar la gestion editorial del backend, agregando filtros avanzados por etiquetas y autor, integracion con filtros nativos, campos ACF editoriales y exportacion de posts filtrados a Excel con estado de LinkedIn y contenido de video. Desarrollado en PHP con WordPress Plugin API, Composer, PhpSpreadsheet, ACF y Select2, bajo una arquitectura modular por capas.

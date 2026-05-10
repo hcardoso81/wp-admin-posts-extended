@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: WP Admin Posts Extended
- * Description: Filtros avanzados por etiquetas y autor, compatibilidad con filtros nativos y exportacion Excel con estado de LinkedIn.
+ * Description: Gestion editorial para WordPress Admin con filtros avanzados, campos ACF, columnas personalizadas y exportacion Excel.
  * Plugin URI: https://github.com/hcardoso81/wp-admin-posts-extended
  * Author: Hernan Cardoso
  * Author URI: https://www.linkedin.com/in/cardosohernan/
- * Version: 2.2.0
+ * Version: 2.3.0
  */
 
 defined('ABSPATH') || exit;
@@ -15,7 +15,7 @@ if (!defined('WPM_PLUGIN_PATH')) {
 }
 
 if (!defined('WPM_PLUGIN_VERSION')) {
-    define('WPM_PLUGIN_VERSION', '2.2.0');
+    define('WPM_PLUGIN_VERSION', '2.3.0');
 }
 
 require_once __DIR__ . '/vendor/autoload.php';

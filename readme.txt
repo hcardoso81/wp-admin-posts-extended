@@ -4,6 +4,7 @@ wp-admin-posts-extended/
 |   |-- AdminFiltersController.php
 |   |-- AdminExportController.php
 |   |-- AdminAssets.php
+|   |-- AdminPostColumnsController.php
 |   |
 |   |-- views/
 |       |-- tag-filter.php
@@ -32,6 +33,8 @@ Funcionalidades:
 - Exportacion Excel de los posts filtrados.
 - Exportacion del estado de LinkedIn como texto: Pendiente, Publicado, Publicado manualmente o Programado para publicar.
 - Campo editorial Fuente mediante ACF.
+- Campo editorial hasVideo mediante ACF para marcar posts con videos.
+- Columna Contiene Videos en el listado administrativo y en la exportacion Excel.
 
 Comando para generar zip desde Git:
 
