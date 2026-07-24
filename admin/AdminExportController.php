@@ -34,6 +34,14 @@ class AdminExportController
             }
         }
 
+        if (!empty($_GET['admin_year'])) {
+            $year = absint($_GET['admin_year']);
+
+            if ($year >= 2016 && $year <= (int) current_time('Y')) {
+                $parts[] = 'ano-' . $year;
+            }
+        }
+
         $parts[] = 'posts';
 
         return implode('-', $parts) . '.xlsx';
@@ -81,7 +89,7 @@ class AdminExportController
         $row = 2;
 
         foreach ($posts as $post) {
-            $sheet->setCellValue('A' . $row, get_the_date('Y-m-d', $post));
+            $sheet->setCellValue('A' . $row, get_the_date('d/m/Y', $post));
             $sheet->setCellValue('B' . $row, $post->post_title);
 
             $sheet->setCellValue('C' . $row, get_permalink($post));

@@ -6,17 +6,21 @@ Contexto operativo para agentes que trabajen en este repositorio.
 
 WP Admin Posts Extended es un plugin personalizado para WordPress orientado a mejorar la gestion editorial dentro del panel administrativo.
 
+La version actual del plugin es 2.5.1.
+
 El plugin extiende la pantalla nativa de listado de posts (`edit.php?post_type=post`) agregando:
 
 - Filtro multiple por etiquetas mediante Select2.
 - Filtro por autor integrado al listado administrativo de posts.
+- Filtro dinamico por año desde 2016 hasta el año actual.
 - Compatibilidad con filtros nativos de WordPress, incluyendo categoria, fecha y busqueda.
 - Exportacion de los resultados filtrados a un archivo Excel `.xlsx`.
+- La fecha exportada se muestra con formato `dd/mm/yyyy`.
 - Exportacion del estado de publicacion en LinkedIn como texto, incluyendo pendiente, publicado, publicado manualmente y programado para publicar.
 - Campo editorial "Fuente" mediante ACF, con opciones para clasificar el contenido como "Nota original" o "Comunicado de prensa".
 - Campo editorial "hasVideo" mediante ACF, con checkbox para marcar posts que contienen videos de YouTube embebidos.
 - Columna "Contiene Videos" al final del listado administrativo de posts y en la exportacion Excel.
-- Herramienta temporal `tools/backfill-has-video.php` para completar `hasVideo` en posts historicos publicados hasta el 1 de enero de 2025.
+- Herramienta temporal `tools/backfill-has-video.php` para completar `hasVideo` en posts publicados desde el 1 de enero de 2025 hasta hoy, con simulacion detallada de los posts detectados.
 
 El objetivo principal del proyecto es mantener la logica desacoplada del archivo principal del plugin y organizada por responsabilidades.
 
@@ -51,7 +55,7 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 `domain/PostCriteria.php`
 
 - Representa los criterios de filtrado disponibles.
-- Actualmente soporta etiquetas, autor, categoria, fecha y busqueda.
+- Actualmente soporta etiquetas, autor, categoria, año, fecha y busqueda.
 - Debe mantenerse como objeto simple, sin llamadas directas a WordPress.
 
 `domain/PostRepositoryInterface.php`
@@ -64,13 +68,13 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 `infrastructure/wordpress/Request.php`
 
 - Construye un `PostCriteria` a partir de `$_GET` en el admin.
-- Sanitiza entradas como `admin_tag`, `admin_author`, `m` y `s`.
+- Sanitiza entradas como `admin_tag`, `admin_author`, `admin_year`, `m` y `s`.
 - Mantener aqui la traduccion entre parametros HTTP de WordPress y objetos del dominio.
 
 `infrastructure/wordpress/AdminQueryModifier.php`
 
 - Aplica un `PostCriteria` sobre la query principal del listado admin.
-- Usa `tax_query`, `author`, `cat`, `m` y `s` sobre `WP_Query`.
+- Usa `tax_query`, `author`, `cat`, `year`, `m` y `s` sobre `WP_Query`.
 
 `infrastructure/wordpress/WpPostRepository.php`
 
@@ -84,6 +88,7 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 
 - Registra hooks para renderizar filtros, aplicar filtros y mostrar el boton de exportacion.
 - Renderiza `admin/views/tag-filter.php`, `admin/views/author-filter.php` y `admin/views/export-button.php`.
+- Renderiza `admin/views/year-filter.php` con opciones desde 2016 hasta el año actual.
 - Aplica filtros sobre la main query del admin mediante `AdminQueryModifier`.
 
 `admin/AdminExportController.php`
@@ -132,8 +137,9 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 `tools/backfill-has-video.php`
 
 - Herramienta temporal de ejecucion manual para actualizar posts historicos.
-- Busca posts publicados hasta el 1 de enero de 2025 inclusive.
+- Busca posts publicados desde el 1 de enero de 2025 hasta la fecha actual inclusive.
 - Analiza `post_content` para detectar URLs o embeds de YouTube.
+- En modo simulacion muestra ID, fecha, titulo, estado actual de `hasVideo`, accion simulada y enlace de edicion de cada post detectado.
 - Marca el ACF `hasVideo` con `['1']` cuando encuentra contenido de YouTube.
 - Requiere usuario logueado con `manage_options`, nonce y allowlist de IP configurado.
 - Guarda la opcion `wpape_has_video_backfill_completed` para evitar ejecuciones repetidas.
@@ -145,7 +151,7 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 2. El plugin carga Composer y luego `bootstrap/admin.php`.
 3. En `plugins_loaded`, se registran assets, filtros y exportacion.
 4. En la pantalla de posts:
-   - `restrict_manage_posts` agrega el selector de etiquetas, selector de autor y el boton de exportacion.
+   - `restrict_manage_posts` agrega los selectores de etiquetas, autor y año, además del boton de exportacion.
    - `admin_enqueue_scripts` carga Select2 y CSS personalizado.
    - `pre_get_posts` toma los parametros del request, crea un `PostCriteria` y modifica la query principal.
 5. Si el usuario presiona `Exportar EXCEL`:
@@ -196,15 +202,16 @@ La exportacion lee este meta con `get_post_meta($post->ID, 'hasVideo', true)` y 
 
 ## Backfill historico hasVideo
 
-La herramienta temporal `tools/backfill-has-video.php` sirve para completar `hasVideo` en posts publicados hasta el 1 de enero de 2025 inclusive.
+La herramienta temporal `tools/backfill-has-video.php` sirve para completar `hasVideo` en posts publicados desde el 1 de enero de 2025 hasta la fecha actual inclusive.
 
 Uso recomendado:
 
 1. Configurar el allowlist de IP dentro del archivo antes de subirlo.
 2. Abrir el archivo desde el navegador con un usuario administrador logueado.
 3. Ejecutar primero en modo simulacion.
-4. Ejecutar sin simulacion solo si el conteo es correcto.
-5. Borrar el archivo del servidor al finalizar.
+4. Revisar el detalle de posts detectados que muestra la simulacion.
+5. Ejecutar sin simulacion solo si el conteo y el detalle son correctos.
+6. Borrar el archivo del servidor al finalizar.
 
 La deteccion contempla URLs y embeds de `youtube.com`, `youtu.be` y `youtube-nocookie.com`.
 
@@ -254,6 +261,7 @@ php -l admin/AdminExportController.php
 php -l admin/AdminPostColumnsController.php
 php -l tools/backfill-has-video.php
 php -l admin/views/author-filter.php
+php -l admin/views/year-filter.php
 ```
 
 Para cambios funcionales, validar manualmente en WordPress Admin:
@@ -264,6 +272,7 @@ Para cambios funcionales, validar manualmente en WordPress Admin:
 - Los filtros nativos de categoria, fecha y busqueda siguen funcionando.
 - La exportacion respeta los filtros aplicados.
 - El Excel abre correctamente y contiene fecha, titulo, link, estado de LinkedIn textual, fuente, contiene videos, categorias y etiquetas.
+- La fecha del Excel se visualiza como `dd/mm/yyyy` y el filtro por año limita tanto el listado como la exportacion.
 
 ## Notas Para Futuras Extensiones
 

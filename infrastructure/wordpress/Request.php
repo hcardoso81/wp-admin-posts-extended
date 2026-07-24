@@ -25,6 +25,17 @@ class Request
             ? sanitize_text_field($_GET['m'])
             : null;
 
+        $year = null;
+
+        if (isset($_GET['admin_year']) && $_GET['admin_year'] !== '') {
+            $candidateYear = absint($_GET['admin_year']);
+            $currentYear = (int) current_time('Y');
+
+            if ($candidateYear >= 2016 && $candidateYear <= $currentYear) {
+                $year = $candidateYear;
+            }
+        }
+
         $search = isset($_GET['s']) && $_GET['s'] !== ''
             ? sanitize_text_field($_GET['s'])
             : null;
@@ -36,6 +47,6 @@ class Request
             $author = $author > 0 ? $author : null;
         }
 
-        return new PostCriteria($tags, $category, $date, $search, $author);
+        return new PostCriteria($tags, $category, $date, $search, $author, $year);
     }
 }

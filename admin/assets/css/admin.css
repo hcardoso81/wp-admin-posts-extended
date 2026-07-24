@@ -22,6 +22,10 @@
     max-width: 220px;
 }
 
+#filter-by-year {
+    min-width: 140px;
+}
+
 #post-query-submit,
 #wpape-export-posts {
     min-height: 32px;
@@ -70,7 +74,8 @@
     }
 
     #filter-by-tag + .select2-container,
-    #filter-by-author {
+    #filter-by-author,
+    #filter-by-year {
         width: 100% !important;
         max-width: 100%;
     }

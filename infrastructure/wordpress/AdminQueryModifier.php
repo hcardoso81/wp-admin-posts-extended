@@ -28,6 +28,10 @@ class AdminQueryModifier
             $query->set('m', $criteria->date());
         }
 
+        if ($criteria->year()) {
+            $query->set('year', $criteria->year());
+        }
+
         if ($criteria->search()) {
             $query->set('s', $criteria->search());
         }

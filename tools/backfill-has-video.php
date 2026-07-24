@@ -11,10 +11,10 @@ declare(strict_types=1);
 $allowedIps = [
     '127.0.0.1',
     '::1',
-    // Add your public IP here before uploading to production, for example: '203.0.113.10',
+    '181.80.42.1',
 ];
 
-$cutoffDate = '2025-01-01';
+$startDate = '2025-01-01';
 $optionName = 'wpape_has_video_backfill_completed';
 $nonceAction = 'wpape_backfill_has_video';
 
@@ -98,6 +98,8 @@ if ($wpLoad === '') {
 
 require_once $wpLoad;
 
+$endDate = current_time('Y-m-d');
+
 $clientIp = wpape_backfill_client_ip();
 
 if (!empty($allowedIps) && !in_array($clientIp, $allowedIps, true)) {
@@ -119,6 +121,7 @@ if ($completedAt) {
 $didRun = isset($_POST['wpape_run_backfill']);
 $isDryRun = isset($_POST['wpape_dry_run']);
 $summary = null;
+$matchedPosts = [];
 
 if ($didRun) {
     check_admin_referer($nonceAction);
@@ -145,7 +148,8 @@ if ($didRun) {
             'order' => 'ASC',
             'date_query' => [
                 [
-                    'before' => $cutoffDate . ' 23:59:59',
+                    'after' => $startDate . ' 00:00:00',
+                    'before' => $endDate . ' 23:59:59',
                     'inclusive' => true,
                 ],
             ],
@@ -163,8 +167,19 @@ if ($didRun) {
             }
 
             $summary['matched']++;
+            $alreadyMarked = wpape_backfill_has_video_meta($postId);
+            $wouldUpdate = !$alreadyMarked;
 
-            if (wpape_backfill_has_video_meta($postId)) {
+            $matchedPosts[] = [
+                'id' => $postId,
+                'date' => get_the_date('Y-m-d H:i:s', $postId),
+                'title' => get_the_title($postId),
+                'edit_link' => get_edit_post_link($postId, ''),
+                'already_marked' => $alreadyMarked,
+                'would_update' => $wouldUpdate,
+            ];
+
+            if ($alreadyMarked) {
                 $summary['already_marked']++;
                 continue;
             }
@@ -197,11 +212,14 @@ if ($didRun) {
         button { padding: 8px 14px; }
         .warning { border-left: 4px solid #d63638; padding: 10px 14px; background: #fcf0f1; }
         .result { border-left: 4px solid #00a32a; padding: 10px 14px; background: #edfaef; }
+        table { border-collapse: collapse; margin-top: 20px; width: 100%; }
+        th, td { border: 1px solid #c3c4c7; padding: 8px; text-align: left; vertical-align: top; }
+        th { background: #f6f7f7; }
     </style>
 </head>
 <body>
     <h1>Backfill hasVideo</h1>
-    <p>Esta herramienta busca posts publicados hasta <code><?php echo esc_html($cutoffDate); ?></code> inclusive y marca <code>hasVideo</code> cuando encuentra links o embeds de YouTube.</p>
+    <p>Esta herramienta busca posts publicados desde <code><?php echo esc_html($startDate); ?></code> hasta <code><?php echo esc_html($endDate); ?></code> inclusive y marca <code>hasVideo</code> cuando encuentra links o embeds de YouTube.</p>
     <p class="warning">Ejecutar una sola vez y borrar este archivo del servidor al terminar.</p>
 
     <?php if ($summary !== null) : ?>
@@ -212,6 +230,42 @@ if ($didRun) {
             <p>Posts ya marcados previamente: <?php echo esc_html((string) $summary['already_marked']); ?></p>
             <p>Posts <?php echo $isDryRun ? 'que se actualizarian' : 'actualizados'; ?>: <?php echo esc_html((string) $summary['updated']); ?></p>
         </div>
+
+        <?php if (!empty($matchedPosts)) : ?>
+            <h2>Posts con YouTube detectado</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Titulo</th>
+                        <th>hasVideo actual</th>
+                        <th><?php echo $isDryRun ? 'Accion simulada' : 'Accion realizada'; ?></th>
+                        <th>Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($matchedPosts as $matchedPost) : ?>
+                        <tr>
+                            <td><?php echo esc_html((string) $matchedPost['id']); ?></td>
+                            <td><?php echo esc_html((string) $matchedPost['date']); ?></td>
+                            <td><?php echo esc_html((string) $matchedPost['title']); ?></td>
+                            <td><?php echo $matchedPost['already_marked'] ? 'Si' : 'No'; ?></td>
+                            <td><?php echo $matchedPost['would_update'] ? ($isDryRun ? 'Se actualizaria' : 'Actualizado') : 'Sin cambios'; ?></td>
+                            <td>
+                                <?php if (!empty($matchedPost['edit_link'])) : ?>
+                                    <a href="<?php echo esc_url((string) $matchedPost['edit_link']); ?>" target="_blank" rel="noopener noreferrer">Abrir editor</a>
+                                <?php else : ?>
+                                    No disponible
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php elseif ((int) $summary['matched'] === 0) : ?>
+            <p>No se detectaron posts con contenido de YouTube.</p>
+        <?php endif; ?>
     <?php endif; ?>
 
     <form method="post">

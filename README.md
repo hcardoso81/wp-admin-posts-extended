@@ -7,26 +7,30 @@
 ![ACF](https://img.shields.io/badge/ACF-00A651?style=for-the-badge&logo=wordpress&logoColor=white)
 ![Select2](https://img.shields.io/badge/Select2-1F6FEB?style=for-the-badge&logo=jquery&logoColor=white)
 
-Plugin personalizado para WordPress que mejora la gestion editorial del listado administrativo de posts con filtros avanzados, campos ACF, indicador de videos embebidos y exportacion a Excel.
+Plugin personalizado para WordPress que mejora la gestion editorial del listado administrativo de posts con filtros por etiquetas, autor y ano, campos ACF, indicador de videos embebidos y exportacion a Excel.
+
+Version actual: `2.5.1`.
 
 ## Funcionalidades
 
 - Filtro multiple por etiquetas con Select2.
 - Filtro por autor integrado al listado de posts.
+- Filtro dinámico por año, desde 2016 hasta el año actual.
 - Compatibilidad con filtros nativos de WordPress: categoria, fecha y busqueda.
 - Exportacion de los resultados filtrados a `.xlsx`.
+- Fecha de publicación en el Excel con formato `dd/mm/yyyy`.
 - Columna de estado de LinkedIn en el Excel con soporte para `Pendiente`, `Publicado`, `Publicado manualmente` y `Programado para publicar`.
 - Campo editorial `Fuente` mediante ACF para clasificar posts como `Nota original` o `Comunicado de prensa`.
 - Campo editorial `hasVideo` mediante ACF para marcar posts que contienen videos de YouTube embebidos.
 - Columna `Contiene Videos` al final del listado administrativo de posts.
 - Columna `Contiene Videos` en la exportacion Excel.
-- Herramienta temporal de backfill para completar `hasVideo` en posts historicos publicados hasta el 1 de enero de 2025.
+- Herramienta temporal de backfill para completar `hasVideo` en posts publicados desde el 1 de enero de 2025 hasta hoy, con simulacion detallada de los posts detectados.
 
 ## Herramienta temporal
 
 `tools/backfill-has-video.php` permite ejecutar una rutina manual y segura para marcar `hasVideo` en posts historicos que contienen links o embeds de YouTube.
 
-Antes de subirla a produccion, configurar el allowlist de IP dentro del archivo. Ejecutarla desde el navegador con un usuario administrador, correr primero en modo simulacion y luego sin simulacion. Al finalizar, borrar el archivo del servidor.
+Antes de subirla a produccion, configurar el allowlist de IP dentro del archivo. Ejecutarla desde el navegador con un usuario administrador y correr primero en modo simulacion. La simulacion no actualiza datos y muestra el ID, fecha, titulo, estado actual de `hasVideo`, accion simulada y enlace de edicion de cada post detectado. Luego, si el resultado es correcto, correr sin simulacion. Al finalizar, borrar el archivo del servidor.
 
 ## Arquitectura
 
@@ -36,6 +40,8 @@ El plugin mantiene una separacion por capas:
 - `infrastructure/wordpress/`: parseo del request, modificacion de queries y repositorios WordPress.
 - `admin/`: controladores, vistas y assets del panel administrativo.
 - `bootstrap/`: registro de dependencias, hooks y field groups.
+
+El filtro por año se aplica al listado administrativo y se respeta también en la exportación Excel. Las opciones se generan dinámicamente desde 2016 hasta el año actual.
 
 ## Verificacion
 

@@ -32,6 +32,7 @@ class AdminFiltersController
 
         require __DIR__ . '/views/tag-filter.php';
         require __DIR__ . '/views/author-filter.php';
+        require __DIR__ . '/views/year-filter.php';
     }
 
     public function renderExportButton(): void

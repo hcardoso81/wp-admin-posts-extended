@@ -23,6 +23,10 @@ class WpPostRepository implements PostRepositoryInterface
             $args['m'] = $criteria->date(); // yyyyMM
         }
 
+        if ($criteria->year()) {
+            $args['year'] = $criteria->year();
+        }
+
         if ($criteria->category()) {
             $args['cat'] = $criteria->category();
         }
