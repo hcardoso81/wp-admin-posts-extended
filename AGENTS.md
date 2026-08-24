@@ -6,7 +6,7 @@ Contexto operativo para agentes que trabajen en este repositorio.
 
 WP Admin Posts Extended es un plugin personalizado para WordPress orientado a mejorar la gestion editorial dentro del panel administrativo.
 
-La version actual del plugin es 2.5.1.
+La version actual del plugin es 2.5.3.
 
 El plugin extiende la pantalla nativa de listado de posts (`edit.php?post_type=post`) agregando:
 
@@ -19,7 +19,7 @@ El plugin extiende la pantalla nativa de listado de posts (`edit.php?post_type=p
 - Exportacion del estado de publicacion en LinkedIn como texto, incluyendo pendiente, publicado, publicado manualmente y programado para publicar.
 - Campo editorial "Fuente" mediante ACF, con opciones para clasificar el contenido como "Nota original" o "Comunicado de prensa".
 - Campo editorial "hasVideo" mediante ACF, con checkbox para marcar posts que contienen videos de YouTube embebidos.
-- Columna "Contiene Videos" al final del listado administrativo de posts y en la exportacion Excel.
+- Columna compacta de videos al final del listado administrativo de posts, con icono, tooltip y estados visuales ✓/×; tambien se incluye en la exportacion Excel.
 - Herramienta temporal `tools/backfill-has-video.php` para completar `hasVideo` en posts publicados desde el 1 de enero de 2025 hasta hoy, con simulacion detallada de los posts detectados.
 
 El objetivo principal del proyecto es mantener la logica desacoplada del archivo principal del plugin y organizada por responsabilidades.
@@ -103,8 +103,8 @@ La intencion es que la logica de negocio de filtrado viva en objetos reutilizabl
 `admin/AdminPostColumnsController.php`
 
 - Registra columnas personalizadas en el listado administrativo de posts.
-- Agrega la columna `Contiene Videos` al final del listado.
-- Lee el meta `hasVideo` y muestra `Si` o `No`.
+- Agrega una columna compacta de videos al final del listado, con icono y tooltip `Contiene Videos`.
+- Lee el meta `hasVideo` y muestra un tilde verde cuando esta marcado y una X roja cuando no lo esta.
 
 `admin/AdminAssets.php`
 
@@ -193,7 +193,7 @@ Campo:
 - Valor por defecto: vacio, interpretado como false.
 - Ubicacion: posts (`post_type == post`).
 
-El listado administrativo muestra este valor en la columna `Contiene Videos`, ubicada al final de la tabla.
+El listado administrativo muestra este valor en una columna compacta con icono de video, tooltip `Contiene Videos`, tilde verde cuando esta marcado y X roja cuando no lo esta; la columna esta ubicada al final de la tabla.
 
 La exportacion lee este meta con `get_post_meta($post->ID, 'hasVideo', true)` y muestra:
 

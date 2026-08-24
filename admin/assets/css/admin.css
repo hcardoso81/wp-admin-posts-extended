@@ -68,6 +68,43 @@
     vertical-align: middle;
 }
 
+/* Columna compacta de videos */
+.wp-list-table .column-has_video {
+    width: 64px;
+    text-align: center;
+}
+
+.wp-list-table .column-has_video .wpape-video-column-heading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+}
+
+.wpape-column-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.wpape-column-icon .dashicons {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    line-height: 20px;
+}
+
+.wpape-column-icon--ok .dashicons {
+    color: #00a32a;
+}
+
+.wpape-column-icon--empty .dashicons {
+    color: #d63638;
+}
+
 @media screen and (max-width: 782px) {
     #posts-filter .tablenav.top .alignleft.actions:not(.bulkactions) {
         gap: 10px;

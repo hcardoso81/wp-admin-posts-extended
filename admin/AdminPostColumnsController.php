@@ -14,7 +14,7 @@ class AdminPostColumnsController
     {
         unset($columns['has_video']);
 
-        $columns['has_video'] = 'Contiene Videos';
+        $columns['has_video'] = '<span class="dashicons dashicons-video-alt3 wpape-video-column-heading" title="Contiene Videos" aria-label="Contiene Videos"></span>';
 
         return $columns;
     }
@@ -25,7 +25,17 @@ class AdminPostColumnsController
             return;
         }
 
-        echo esc_html($this->hasVideo($postId) ? 'Si' : 'No');
+        $hasVideo = $this->hasVideo($postId);
+        $label = $hasVideo ? 'Contiene video' : 'No contiene video';
+        $class = $hasVideo ? 'wpape-column-icon--ok' : 'wpape-column-icon--empty';
+        $icon = $hasVideo ? 'dashicons-yes-alt' : 'dashicons-dismiss';
+
+        printf(
+            '<span class="wpape-column-icon %1$s" title="%2$s"><span class="dashicons %3$s" aria-hidden="true"></span><span class="screen-reader-text">%2$s</span></span>',
+            esc_attr($class),
+            esc_html($label),
+            esc_attr($icon)
+        );
     }
 
     private function hasVideo(int $postId): bool
