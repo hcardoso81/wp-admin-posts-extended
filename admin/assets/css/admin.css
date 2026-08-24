@@ -68,10 +68,79 @@
     vertical-align: middle;
 }
 
+/* Columnas compactas del listado */
+.wp-list-table .column-date {
+    width: 118px;
+    min-width: 118px;
+    white-space: normal;
+}
+
+.wpape-date-parts {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.45;
+}
+
+.wpape-date-part {
+    display: block;
+}
+
+.wp-list-table .column-tags {
+    width: 150px;
+    max-width: 150px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.wp-list-table .column-tags a {
+    white-space: normal;
+}
+
+.wp-list-table .column-categories {
+    width: 120px;
+    max-width: 120px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.wp-list-table .column-categories a {
+    white-space: normal;
+}
+
+/* Columnas de iconos de integraciones */
+.wp-list-table .column-linkedin_content,
+.wp-list-table .column-linkedin_posted,
+.wp-list-table .column-linkedin_status,
+.wp-list-table .column-has_video,
+.wp-list-table .column-meta_desc,
+.wp-list-table .column-beyondwords {
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
+    padding-left: 4px;
+    padding-right: 4px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* BeyondWords tiene encabezado textual, no solo un icono */
+.wp-list-table .column-beyondwords,
+.wp-list-table .column-beyond_words {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
 /* Columna compacta de videos */
 .wp-list-table .column-has_video {
-    width: 64px;
-    text-align: center;
+    width: 42px;
+    min-width: 42px;
+    max-width: 42px;
 }
 
 .wp-list-table .column-has_video .wpape-video-column-heading {

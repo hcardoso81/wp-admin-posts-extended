@@ -6,7 +6,7 @@ Contexto operativo para agentes que trabajen en este repositorio.
 
 WP Admin Posts Extended es un plugin personalizado para WordPress orientado a mejorar la gestion editorial dentro del panel administrativo.
 
-La version actual del plugin es 2.5.3.
+La version actual del plugin es 2.5.7.
 
 El plugin extiende la pantalla nativa de listado de posts (`edit.php?post_type=post`) agregando:
 

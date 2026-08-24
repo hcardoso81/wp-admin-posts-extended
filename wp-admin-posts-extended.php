@@ -5,7 +5,7 @@
  * Plugin URI: https://github.com/hcardoso81/wp-admin-posts-extended
  * Author: Hernan Cardoso
  * Author URI: https://www.linkedin.com/in/cardosohernan/
- * Version: 2.5.3
+ * Version: 2.5.7
  */
 
 defined('ABSPATH') || exit;
@@ -15,7 +15,7 @@ if (!defined('WPM_PLUGIN_PATH')) {
 }
 
 if (!defined('WPM_PLUGIN_VERSION')) {
-    define('WPM_PLUGIN_VERSION', '2.5.3');
+    define('WPM_PLUGIN_VERSION', '2.5.7');
 }
 
 require_once __DIR__ . '/vendor/autoload.php';

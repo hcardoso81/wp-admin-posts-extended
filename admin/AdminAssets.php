@@ -34,7 +34,7 @@ class AdminAssets
             'wpape-admin',
             plugin_dir_url(__FILE__) . 'assets/css/admin.css',
             ['wpape-select2'],
-            '1.0'
+            '1.1'
         );
 
         wp_enqueue_style('wpape-select2');
@@ -113,6 +113,31 @@ class AdminAssets
                         }
                     });
                 }
+
+                $('.wp-list-table .column-date').each(function(){
+                    const cell = $(this);
+                    const lineBreak = cell.find('br').first();
+
+                    if (!lineBreak.length || cell.find('.wpape-date-parts').length) {
+                        return;
+                    }
+
+                    const dateText = lineBreak.nextAll().toArray().map(function(node){
+                        return $(node).text();
+                    }).join(' ').replace(/\\s+/g, ' ').trim();
+                    const parts = dateText.match(/^(.+?)\\s+a las\\s+(.+)$/i);
+
+                    if (!parts) {
+                        return;
+                    }
+
+                    lineBreak.nextAll().remove();
+
+                    const dateParts = $('<span>', { class: 'wpape-date-parts' });
+                    $('<span>', { class: 'wpape-date-part' }).text(parts[1]).appendTo(dateParts);
+                    $('<span>', { class: 'wpape-date-part' }).text(parts[2]).appendTo(dateParts);
+                    lineBreak.after(dateParts);
+                });
 
             });
             ",

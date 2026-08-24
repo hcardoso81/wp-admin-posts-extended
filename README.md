@@ -9,7 +9,7 @@
 
 Plugin personalizado para WordPress que mejora la gestion editorial del listado administrativo de posts con filtros por etiquetas, autor y ano, campos ACF, indicador de videos embebidos y exportacion a Excel.
 
-Version actual: `2.5.3`.
+Version actual: `2.5.7`.
 
 ## Funcionalidades
 
@@ -23,6 +23,7 @@ Version actual: `2.5.3`.
 - Campo editorial `Fuente` mediante ACF para clasificar posts como `Nota original` o `Comunicado de prensa`.
 - Campo editorial `hasVideo` mediante ACF para marcar posts que contienen videos de YouTube embebidos.
 - Columna compacta de videos al final del listado administrativo, con icono, tooltip y estados visuales ✓/×.
+- Columnas de fecha y etiquetas optimizadas para ocupar menos espacio y permitir wrapping del contenido.
 - Columna `Contiene Videos` en la exportacion Excel.
 - Herramienta temporal de backfill para completar `hasVideo` en posts publicados desde el 1 de enero de 2025 hasta hoy, con simulacion detallada de los posts detectados.
 
